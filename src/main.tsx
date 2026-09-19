@@ -1,41 +1,32 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter, createRootRoute, createRoute } from '@tanstack/react-router'
-import { AppLayout } from './layouts/AppLayout'
-import { DashboardPage } from './features/dashboard/DashboardPage'
-import { PRList } from './features/purchase-requests/components/PRList'
-import { PRCreateForm } from './features/purchase-requests/components/PRCreateForm'
-import './index.css'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
+import { queryClient } from "@/lib/query-client";
+import { SessionProvider } from "@/context/session-context";
+import { routeTree } from "./routeTree.gen";
+import "./index.css";
 
-const rootRoute = createRootRoute({ component: AppLayout })
+const router = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  scrollRestoration: true,
+});
 
-const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: DashboardPage,
-})
-
-const prListRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/purchase-requests',
-  component: PRList,
-})
-
-const prCreateRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/purchase-requests/create',
-  component: PRCreateForm,
-})
-
-const routeTree = rootRoute.addChildren([indexRoute, prListRoute, prCreateRoute])
-const router = createRouter({ routeTree })
-
-declare module '@tanstack/react-router' {
-  interface Register { router: typeof router }
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
-)
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-right" richColors closeButton />
+      </SessionProvider>
+    </QueryClientProvider>
+  </StrictMode>,
+);
