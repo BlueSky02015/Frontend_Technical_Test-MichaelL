@@ -34,12 +34,12 @@ class MockDatabase {
   ];
 
   products: Product[] = [
-    { id: "prod-1", sku: "OIL-001", name: "Industrial Oil", unit: "PCS" },
-    { id: "prod-2", sku: "SAFE-001", name: "Safety Gloves", unit: "BOX" },
-    { id: "prod-3", sku: "HLM-002", name: "Safety Helmet", unit: "PCS" },
-    { id: "prod-4", sku: "PAP-010", name: "A4 Paper Ream", unit: "PACK" },
-    { id: "prod-5", sku: "CLN-004", name: "Floor Cleaner", unit: "LITER" },
-    { id: "prod-6", sku: "BLT-007", name: "Conveyor Belt", unit: "UNIT" },
+    { id: "prod-1", sku: "OIL-001", name: "Industrial Oil", unit: "PCS", imageUrl: "https://images.unsplash.com/photo-1615486364163-4d6b2c2c2e9b?w=200&h=200&fit=crop" },
+    { id: "prod-2", sku: "SAFE-001", name: "Safety Gloves", unit: "BOX", imageUrl: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=200&h=200&fit=crop"},
+    { id: "prod-3", sku: "HLM-002", name: "Safety Helmet", unit: "PCS", imageUrl: "https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=200&h=200&fit=crop"},
+    { id: "prod-4", sku: "PAP-010", name: "A4 Paper Ream", unit: "PACK", imageUrl: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=200&h=200&fit=crop" },
+    { id: "prod-5", sku: "CLN-004", name: "Floor Cleaner", unit: "LITER", imageUrl: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=200&h=200&fit=crop" },
+    { id: "prod-6", sku: "BLT-007", name: "Conveyor Belt", unit: "UNIT", imageUrl: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=200&h=200&fit=crop" },
   ];
 
   purchaseRequests: PurchaseRequest[] = [];
