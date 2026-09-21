@@ -3,9 +3,6 @@
 A frontend implementation of the **Inventory Procurement** case study: Purchase Request → Approval → Purchase Order → Goods Receipt → Inventory Updated.
 
 This repository is the **frontend only**, built to be connected to a real backend later without structural changes (see [Mock API / Data Strategy](#mock-api--data-strategy)).
-
-> **Note on the Figma reference.** The design file linked in the brief could not be opened programmatically (Figma blocks automated/robots access, and the file also requires a login this environment doesn't have). Implementation was therefore driven by the written requirement document and standard enterprise-application UI conventions, using a small, consistent design system (see [Design System](#design-system)). If exact Figma tokens (colors, spacing, type scale) are shared, they can be dropped into `src/index.css`'s `@theme` block in a few minutes without touching component logic.
-
 ---
 
 ## Project Overview
