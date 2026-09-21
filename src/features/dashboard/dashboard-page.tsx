@@ -1,11 +1,16 @@
-import { useDashboardSummary } from "./hooks/use-dashboard";
 import { StatusMetrics, metricIcons } from "./components/StatusMetrics";
+import { Skeleton } from "@/components/shared/skeleton";
+import { ErrorState } from "@/components/shared/error-state";
 import { InventorySummary } from "./components/InventorySummary";
 import { ProductDetails } from "./components/ProductDetails";
 import { TopSellingItems } from "./components/TopSellingItems";
+import { RecentActivityList } from "./components/recent-activity-list";
+import { useDashboardSummary, useRecentActivity } from "./hooks/use-dashboard";
+
 
 export function DashboardPage() {
   const { data: summary, isLoading } = useDashboardSummary();
+  const activityQuery = useRecentActivity();
 
   return (
     <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
@@ -69,6 +74,24 @@ export function DashboardPage() {
           items={summary?.topSellingItems ?? []}
           loading={isLoading}
         />
+      </div>
+       <div className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="mb-4 text-sm font-semibold text-slate-900">Recent Activity</h2>
+        {activityQuery.isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </div>
+        ) : activityQuery.isError || !activityQuery.data ? (
+          <ErrorState
+            title="Failed to load recent activity"
+            description={activityQuery.error?.message}
+            onRetry={() => activityQuery.refetch()}
+          />
+        ) : (
+          <RecentActivityList activities={activityQuery.data} />
+        )}
       </div>
     </main>
   );
