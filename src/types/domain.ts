@@ -28,6 +28,7 @@ export interface Product {
   sku: string;
   name: string;
   unit: UnitOfMeasure;
+  imageUrl?: string;
 }
 
 /* ---------------------------------- Purchase Request ---------------------------------- */
@@ -53,7 +54,6 @@ export interface PurchaseRequest {
   items: PurchaseRequestItem[];
   createdAt: string;
   updatedAt: string;
-  /** Populated only when status === REJECTED */
   rejectionReason?: string;
 }
 
@@ -139,6 +139,14 @@ export interface DashboardSummary {
   waitingApproval: number;
   activePurchaseOrders: number;
   partiallyReceivedOrders: number;
+  totalItems: number;
+  activeItems: number;
+  lowStockItems: number;
+  unconfirmedItems: number;
+  allItemGroups: number;
+  totalStockInHand: number;
+  quantityToReceive: number;
+  topSellingItems: ProductWithStats[];
 }
 
 export type ActivityEntityType = "PURCHASE_REQUEST" | "PURCHASE_ORDER" | "GOODS_RECEIPT";
@@ -150,4 +158,9 @@ export interface RecentActivity {
   description: string;
   warehouseId: string;
   createdAt: string;
+}
+
+export interface ProductWithStats extends Product {
+  totalStock: number;
+  totalReceived: number;
 }

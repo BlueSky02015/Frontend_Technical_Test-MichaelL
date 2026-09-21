@@ -1,8 +1,3 @@
-/**
- * Generic API-layer types. Kept separate from `domain.ts` so that the
- * business entities stay framework/transport agnostic.
- */
-
 export class ApiError extends Error {
   public readonly status: number;
   public readonly code: string;

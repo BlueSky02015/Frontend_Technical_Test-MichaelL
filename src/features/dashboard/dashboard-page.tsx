@@ -1,81 +1,75 @@
-import { AlertCircle, ClipboardList, PackageCheck, ShoppingCart } from "lucide-react";
-import { PageHeader } from "@/components/shared/page-header";
-import { CardSkeleton, Skeleton } from "@/components/shared/skeleton";
-import { ErrorState } from "@/components/shared/error-state";
-import { SummaryCard } from "@/features/dashboard/components/summary-card";
-import { RecentActivityList } from "@/features/dashboard/components/recent-activity-list";
-import { useDashboardSummary, useRecentActivity } from "@/features/dashboard/hooks/use-dashboard";
+import { useDashboardSummary } from "./hooks/use-dashboard";
+import { StatusMetrics, metricIcons } from "./components/StatusMetrics";
+import { InventorySummary } from "./components/InventorySummary";
+import { ProductDetails } from "./components/ProductDetails";
+import { TopSellingItems } from "./components/TopSellingItems";
 
 export function DashboardPage() {
-  const summaryQuery = useDashboardSummary();
-  const activityQuery = useRecentActivity();
+  const { data: summary, isLoading } = useDashboardSummary();
 
   return (
-    <div>
-      <PageHeader
-        title="Dashboard"
-        description="A quick overview of your procurement pipeline."
-      />
-
-      {summaryQuery.isLoading ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <CardSkeleton key={i} />
-          ))}
-        </div>
-      ) : summaryQuery.isError || !summaryQuery.data ? (
-        <ErrorState
-          title="Failed to load summary"
-          description={summaryQuery.error?.message}
-          onRetry={() => summaryQuery.refetch()}
-        />
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <SummaryCard
-            label="Purchase Requests"
-            value={summaryQuery.data.totalPurchaseRequests}
-            icon={ClipboardList}
-            tone="brand"
-          />
-          <SummaryCard
-            label="Waiting Approval"
-            value={summaryQuery.data.waitingApproval}
-            icon={AlertCircle}
-            tone="amber"
-          />
-          <SummaryCard
-            label="Active Purchase Orders"
-            value={summaryQuery.data.activePurchaseOrders}
-            icon={ShoppingCart}
-            tone="sky"
-          />
-          <SummaryCard
-            label="Partially Received"
-            value={summaryQuery.data.partiallyReceivedOrders}
-            icon={PackageCheck}
-            tone="emerald"
+    <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+      {/* Row 1: Sales Activity + Inventory Summary */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="lg:col-span-2">
+          <h2 className="text-xl font-bold mb-4 text-gray-800">
+            Sales Activity
+          </h2>
+          <StatusMetrics
+            metrics={[
+              {
+                label: "TO BE PACKED",
+                value: summary?.activePurchaseOrders ?? 0,
+                unit: "Orders",
+                color: "text-blue-600",
+                icon: metricIcons.packed,
+              },
+              {
+                label: "TO BE SHIPPED",
+                value: summary?.partiallyReceivedOrders ?? 0,
+                unit: "Orders",
+                color: "text-red-500",
+                icon: metricIcons.shipped,
+              },
+              {
+                label: "TO BE DELIVERED",
+                value: summary?.waitingApproval ?? 0,
+                unit: "Requests",
+                color: "text-emerald-500",
+                icon: metricIcons.delivered,
+              },
+              {
+                label: "TO BE INVOICED",
+                value: summary?.totalPurchaseRequests ?? 0,
+                unit: "Requests",
+                color: "text-blue-500",
+                icon: metricIcons.invoiced,
+              },
+            ]}
           />
         </div>
-      )}
-
-      <div className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-sm font-semibold text-slate-900">Recent Activity</h2>
-        {activityQuery.isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-12 w-full" />
-            ))}
-          </div>
-        ) : activityQuery.isError || !activityQuery.data ? (
-          <ErrorState
-            title="Failed to load recent activity"
-            description={activityQuery.error?.message}
-            onRetry={() => activityQuery.refetch()}
+        <div className="lg:col-span-1">
+          <InventorySummary
+            inHand={summary?.totalStockInHand ?? 0}
+            toReceive={summary?.quantityToReceive ?? 0}
           />
-        ) : (
-          <RecentActivityList activities={activityQuery.data} />
-        )}
+        </div>
       </div>
-    </div>
+
+      {/* Row 2: Product Details + Top Selling */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ProductDetails
+          lowStock={summary?.lowStockItems ?? 0}
+          allItemGroups={summary?.allItemGroups ?? 0}
+          totalItems={summary?.totalItems ?? 0}
+          activeItems={summary?.activeItems ?? 0}
+          unconfirmedItems={summary?.unconfirmedItems ?? 0}
+        />
+        <TopSellingItems
+          items={summary?.topSellingItems ?? []}
+          loading={isLoading}
+        />
+      </div>
+    </main>
   );
 }
