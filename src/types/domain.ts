@@ -54,7 +54,6 @@ export interface PurchaseRequest {
   items: PurchaseRequestItem[];
   createdAt: string;
   updatedAt: string;
-  /** Populated only when status === REJECTED */
   rejectionReason?: string;
 }
 

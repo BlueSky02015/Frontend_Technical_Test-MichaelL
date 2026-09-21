@@ -3,9 +3,6 @@
 A frontend implementation of the **Inventory Procurement** case study: Purchase Request → Approval → Purchase Order → Goods Receipt → Inventory Updated.
 
 This repository is the **frontend only**, built to be connected to a real backend later without structural changes (see [Mock API / Data Strategy](#mock-api--data-strategy)).
-
-> **Note on the Figma reference.** The design file linked in the brief could not be opened programmatically (Figma blocks automated/robots access, and the file also requires a login this environment doesn't have). Implementation was therefore driven by the written requirement document and standard enterprise-application UI conventions, using a small, consistent design system (see [Design System](#design-system)). If exact Figma tokens (colors, spacing, type scale) are shared, they can be dropped into `src/index.css`'s `@theme` block in a few minutes without touching component logic.
-
 ---
 
 ## Project Overview
@@ -14,7 +11,7 @@ ProcureFlow lets warehouse **USER**s raise Purchase Requests, **APPROVER**s appr
 
 Implemented screens:
 
-- **Dashboard** — summary metrics + recent activity feed
+- **Dashboard** — a modern analytics dashboard with status metrics, product details with stock breakdown, top-selling items (with product images), inventory summary, and a recent activity feed
 - **Purchase Requests** — list (search/status filter), create, edit (DRAFT only), detail with role-based actions (Edit/Submit, Approve/Reject with required rejection reason)
 - **Purchase Orders** — list (search/status filter), detail with per-item receiving breakdown and progress
 - **Goods Receipt** — modal form off the PO detail page, validated against remaining quantity
@@ -94,7 +91,6 @@ None required — the app runs entirely against the in-memory mock backend descr
 npm run dev       # start the Vite dev server (http://localhost:5173)
 npm run build     # type-check (tsc -b) + production build to dist/
 npm run preview   # preview the production build locally
-npm run lint      # oxlint
 ```
 
 ## Testing
@@ -112,6 +108,18 @@ npm run test:ui     # Vitest UI
 - `api/repositories/mock/purchase-request.repository.test.ts` — DRAFT→SUBMITTED→APPROVED/REJECTED transitions, approving a request creates a PO, rejecting requires a reason
 - `api/repositories/mock/purchase-order.repository.test.ts` — Goods Receipt cannot exceed remaining quantity, a successful receipt updates received/remaining and inventory stock, PO status derives correctly (ORDERED → PARTIALLY_RECEIVED → RECEIVED)
 - `features/purchase-requests/components/approval-actions.test.tsx` — component-level test asserting Reject is blocked without a reason, and that a successful approve/reject updates state without a page reload
+
+### Dashboard Composition
+
+The dashboard is built from five composable widgets, all fed by a single `useDashboardSummary()` hook that talks only to `repositories.dashboard.getSummary()`:
+
+| Widget | Description |
+|---|---|
+| `StatusMetrics` | Four KPI cards: To Be Packed, To Be Shipped, To Be Delivered, To Be Invoiced — each derived from PR/PO status counts |
+| `InventorySummary` | Two-metric card: total quantity in hand + quantity still to be received (sum of unreceived PO line items) |
+| `ProductDetails` | Low-stock count, item group count, total items, unconfirmed (DRAFT) PR count, plus a conic-gradient "active items" donut |
+| `TopSellingItems` | Three products ranked by total received quantity (tie-broken by stock), each rendered with a product image and graceful initials fallback |
+| `RecentActivity` | Chronological feed of PR/PO/GR events (existing) |
 
 ## Mock API / Data Strategy
 
